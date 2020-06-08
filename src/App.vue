@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Generate Zip Files</h1>
-    <p>Select files and generate a Zip containing them.</p>
+    <p>Select files and generate a Zip containing them</p>
     <label v-bind:class="loading ? 'upload loading' : 'upload'">
       <input type="file" multiple ref="files" v-on:change="handleFileSelection()" />
       <span>Select Files</span>
