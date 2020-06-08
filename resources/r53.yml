@@ -1,0 +1,15 @@
+Resources:
+  WebsiteRoute53Cname:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: joelvardy.com.
+      Name: zip.joelvardy.com
+      Type: CNAME
+      TTL: 900
+      ResourceRecords:
+        - !GetAtt CloudfrontDistribution.DomainName
+
+Outputs:
+  WebsiteRoute53Domain:
+    Description: Website Route 53 domain
+    Value: !Ref WebsiteRoute53Cname

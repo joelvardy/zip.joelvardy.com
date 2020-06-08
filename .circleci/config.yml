@@ -1,0 +1,42 @@
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - run:
+          name: Install AWS CLI
+          command: |
+            sudo apt-get -y -qq install python python-pip
+            sudo pip install -qq awscli
+      - run:
+          name: Install deps
+          command: make install
+      - run:
+          name: Lint code
+          command: make lint
+      - run:
+          name: Build website
+          command: make build
+      - run:
+          name: Deploy infrastructure
+          command: |
+            OUTPUT="$(make deploy-infrastructure)"
+            echo "$OUTPUT"
+            echo "export S3_WEBSITE_BUCKET_NAME=\"$(echo $OUTPUT | node ./.circleci/regex.js WebsiteS3BucketName)\"" >> $BASH_ENV
+            echo "export CLOUDFRONT_DISTRIBUTION_ID=\"$(echo $OUTPUT | node ./.circleci/regex.js CloudfrontDistributionId)\"" >> $BASH_ENV
+      - run:
+          name: Deploy website
+          command: make deploy-website
+
+workflows:
+  version: 2
+  continuous-integration:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
